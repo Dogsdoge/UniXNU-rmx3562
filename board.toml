@@ -1,0 +1,73 @@
+schema_version = 2
+
+[board]
+name = "rmx3562"
+soc = "MT6895"
+soc_source = "mt6895"
+os_profile = "ios-16.5-20F66"
+description = "realme GT Neo3 (RMX3562) / MT6895 (Dimensity 8100) - UniXNU iOS 16 port (WORK IN PROGRESS)"
+kit = "rmx3562"
+
+[components]
+include = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "XnuPrelink", "DarwinBoot", "GopFramebuffer", "RamBlock", "AppleKeyStoreState"]
+
+[kernel]
+defconfig = "rmx3562_defconfig"
+config_fragments = ["arch:configs/common.config", "soc:configs/mt6895.config", "os:configs/ios.config"]
+# The ARM64 series targets xnu-10063; the iOS 16.5 OS series carries its xnu-8796 equivalent.
+patch_series = ["soc:patches/xnu/series", "os:patches/xnu/series", "device:patches/xnu/series"]
+archives = [
+  "build-corecrypto-14.py",
+  "build-corecrypto-14.py --namespace",
+  "component:ArmDTPlatform",
+  "component:ArmCpu",
+  "component:SoftwareAES",
+  "build-software-aes-bindings.py",
+  "build-mockfs-fixture.py",
+  "build-libpthread-kernel.py",
+  "component:RamBlock",
+  "component:AppleKeyStoreState",
+]
+
+[device_tree]
+source = "device:dts/rmx3562.dts"
+include_dirs = ["soc:dts"]
+
+[firmware]
+# MT6895 UEFI: CrackerCat/EDK2-Xiaomi-MediaTek-MT6895 (pearl branch) or our own MT6895Pkg fork.
+# Values TBD after first firmware build - placeholders for now.
+config = "rmx3562"
+dsc = "Platforms/realme/rmx3562Pkg/rmx3562.dsc"
+fd = "Build/rmx3562Pkg/{target}_CLANGPDB/FV/SILICIUM_UEFI.fd"
+packages = ["{uefi}", "{uefi}/Platforms/realme", "{tree}/package", "{tree}/drivers/DarwinBoot", "{edk2}", "{uefi}/Common/Mu", "{uefi}/Common/Mu_OEM_Sample", "{uefi}/Silicon/MediaTek", "{uefi}/Silicon/Silicium"]
+submodules = ["Binaries", "Common/Mu", "Common/Mu_OEM_Sample", "Silicon/Silicium/OpensslPkg/Library/OpensslLib/openssl"]
+patches = ["Resources/MuPatches/AsmMacroLib.patch", "Resources/MuPatches/Auth-Service.patch", "Resources/MuPatches/Boot-Manager.patch", "Resources/MuPatches/Timer.patch", "Resources/MuPatches/Usb-Bus.patch"]
+
+[firmware.defines]
+ENABLE_SECUREBOOT = "0"
+DEVICE_MODEL = "0"
+MEMORY_PROTECTION = "TRUE"
+SHIP_MODE = "FALSE"
+BUILDID_STRING = "rmx3562-unixnu"
+
+[bootimg]
+# MTK LK loads boot_a; no fastboot boot: on stock LK. Boot image values TBD after bring-up.
+[bootimg.image]
+header_version = 4
+base = 0x40000000
+kernel_offset = 0x00008000
+ramdisk_offset = 0x01000000
+tags_offset = 0x08000000
+pagesize = 4096
+kernel_compression = "gzip"
+
+[payload]
+volume = "RMX3562"
+size_mib = 64
+loader = "firmware"
+title = "iOS 16.5"
+dram_size = "0x300000000"   # 12 GiB
+timeout = 3
+
+[package]
+unixnu = "unixnu"
