@@ -9,7 +9,7 @@ commit = "76fe2f0955ee76fd497c497cd50780945dbaf17e"
 # NOT YET enabled in board.toml: Layer 3 is a design skeleton; enable when build-ready.
 [[source]]
 name = "shengufs-mt6895"
-kind = "component"
+kind = "driver"
 git = "https://github.com/Dogsdoge/ShengUfs-mt6895"
 commit = "c992abbfbf6cb0e3aae6dc5256e0f34b1b85e454"
 

@@ -143,6 +143,31 @@ jobs:
           echo "Next: supply iPhone10,3 16.5 IPSW + kernelcache, then ./unixnu build kernel"
           echo "MT6895 timer patch 0100 ready; SWEET board config reuse confirmed"
 
+      - name: Install iOS 16.5 OS profile into the framework
+        run: |
+          mkdir -p unixnu/profiles/os
+          cp -r rmx3562/os-profiles/ios-16.5-20F66 unixnu/profiles/os/
+
+      - name: Defconfig rmx3562_defconfig
+        working-directory: unixnu
+        run: python3 unixnu defconfig rmx3562_defconfig -D ../rmx3562
+
+      # The IPSW is read member-by-member over HTTP range requests by the
+      # framework (unixnu/ipsw.py); no full 6.17 GB download on the runner.
+      - name: Build kernel.macho (IPSW members via range requests)
+        working-directory: unixnu
+        env:
+          UNIXNU_TOOLCHAIN: /opt/unixnu-linux
+        run: |
+          python3 unixnu build kernel -D ../rmx3562 \
+            --ipsw "https://updates.cdn-apple.com/2023SpringFCS/fullrestores/032-85130/6AB0D10A-8AF9-4F6C-8CF5-A1B315CABE88/iPhone10,3,iPhone10,6_16.5_20F66_Restore.ipsw"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rmx3562-kernel
+          path: unixnu/out/**/kernel.macho
+          if-no-files-found: error
+
   firmware:
     # EDK2 for MT6895 builds with aarch64-linux-gnu-gcc + clang18 on Linux,
     # so firmware runs on the free-tier ubuntu runner like the kernel job.
