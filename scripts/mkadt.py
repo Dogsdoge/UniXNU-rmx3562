@@ -190,7 +190,7 @@ def build(seed=None, qemu=False, highmem=False, device='sweet', dram_size=None, 
     # bsd/dev/sweet_ufs.c: the UFS host ABL leaves running (absolute physical reg).
     ufs = node('sweet-ufs', [
         ph(),
-        ('compatible', cstr('qcom,ufshc')),
+        ('compatible', cstr('mediatek,mt8183-ufshci')),
         ('reg', u64(ufs, ufs_size)),
     ])
 
