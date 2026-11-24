@@ -9,7 +9,7 @@ description = "realme GT Neo3 (RMX3562) / MT6895 (Dimensity 8100) - UniXNU iOS 1
 kit = "rmx3562"
 
 [components]
-include = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "XnuPrelink", "DarwinBoot", "GopFramebuffer", "RamBlock", "AppleKeyStoreState"]
+include = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "XnuPrelink", "DarwinBoot", "GopFramebuffer", "RamBlock", "AppleKeyStoreState", "ShengUfsMt6895"]
 
 [kernel]
 defconfig = "rmx3562_defconfig"
@@ -27,6 +27,7 @@ archives = [
   "build-libpthread-kernel.py",
   "component:RamBlock",
   "component:AppleKeyStoreState",
+  "component:ShengUfsMt6895",
 ]
 
 [device_tree]
@@ -68,6 +69,9 @@ loader = "firmware"
 title = "iOS 16.5"
 dram_size = "0x300000000"   # 12 GiB
 timeout = 3
+# native-ufs-root=1: use our ShengUfs-mt6895 extent-mapped root.
+# No rd= (that forces RAM-disk root, bypassing the native store).
+kernel_args = ["-v", "serial=3", "debug=0x14e", "native-ufs-root=1"]
 
 [package]
 unixnu = "unixnu"
