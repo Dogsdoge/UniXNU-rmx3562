@@ -1,0 +1,148 @@
+# DESIGN SKETCH - not git-apply ready. Exact insertion points documented in docs/DRIVER-ANALYSIS-20261124.md.
+# Regenerate against real ShengUfs checkout during integration.
+--- a/ShengUfs/RootLayout.h
++++ b/ShengUfs/RootLayout.h
+@@ -1,3 +1,52 @@
+ // SPDX-License-Identifier: BSD-2-Clause-Patent
+ #pragma once
++
++// ---- unixnu-root-extents: file-backed root in userdata (DMU port) ---------------
++// When /chosen carries unixnu-root-extents (u64 triples {fileBlock, partBlock, count},
++// 4 KiB units) and unixnu-root-blocks, the root image is a pinned, preallocated
++// file inside Android's userdata. All reads that would go to the userdata
++// partition are remapped through this table into the file's physical blocks.
++// This is the ShengUfs/IOKit port of ios-fuxi's 0088-fuxi-extent-root.patch.
++#define UX_MAX_EXTENTS 512
++struct UXExtent { uint64_t file, part, count; };
++static UXExtent ux_ext[UX_MAX_EXTENTS];
++static unsigned ux_next;
++static bool ux_root;
++static uint64_t ux_part_first;   // userdata first LBA on LUN 0 (4 KiB units)
++
++// Map a file-relative 4K block to the userdata-partition-relative block.
++static bool ux_map (uint64_t fileBlock, uint64_t *partBlock, uint64_t *run)
++{
++  if (!ux_root) return false;
++  for (unsigned i = 0; i < ux_next; i++) {
++    if (fileBlock >= ux_ext[i].file && fileBlock - ux_ext[i].file < ux_ext[i].count) {
++      uint64_t off = fileBlock - ux_ext[i].file;
++      *partBlock = ux_ext[i].part + off;
++      *run = ux_ext[i].count - off;
++      return true;
++    }
++  }
++  return false;
++}
++
++// Load and validate the extent table from the device tree.
++static int ux_load_extents (void)
++{
++  DTEntry chosen;
++  uint64_t const *ext = NULL, *blocks = NULL;
++  unsigned int size = 0, bsize = 0;
++  if (SecureDTLookupEntry(NULL, "/chosen", &chosen) != kSuccess ||
++      SecureDTGetProperty(chosen, "unixnu-root-extents", (void const **)&ext, &size) != kSuccess ||
++      SecureDTGetProperty(chosen, "unixnu-root-blocks", (void const **)&blocks, &bsize) != kSuccess ||
++      bsize != sizeof(uint64_t) || size == 0 || size % (3 * sizeof(uint64_t)) ||
++      size / (3 * sizeof(uint64_t)) > UX_MAX_EXTENTS) {
++    return ENXIO;
++  }
++  unsigned n = size / (3 * sizeof(uint64_t));
++  uint64_t want = *blocks, pos = 0;
++  for (unsigned i = 0; i < n && pos < want; i++) {
++    uint64_t file = ext[3*i], part = ext[3*i+1], count = ext[3*i+2];
++    if (file != pos || !count) return EINVAL;
++    count = MIN(count, want - pos);
++    for (unsigned j = 0; j < ux_next; j++) {
++      if (part < ux_ext[j].part + ux_ext[j].count && ux_ext[j].part < part + count) return EINVAL;
++    }
++    ux_ext[ux_next] = {file, part, count};
++    ux_next++;
++    pos += count;
++  }
++  if (pos != want) { ux_next = 0; return EINVAL; }
++  ux_root = true;
++  return 0;
++}
+ // ---- LUN 0 GPT and the root-image manifest -------------------------------------------------
+ struct RootWindow {
+@@ -147,6 +196,10 @@ static bool findRootLayout (RootLayout *layout, const char **why)
+   gRootDiagnostic.stage = "root manifest";
+   // First block of the partition: manifest if the root image was flashed, ext4 otherwise.
++#if defined(UNIXNU_FILE_ROOT)
++  uint64_t manifestLba = layout->userdataFirst;
++  if (ux_root) {
++    uint64_t pb = 0, run = 0;
++    if (!ux_map(0, &pb, &run)) { *why = "extent map for manifest"; return false; }
++    manifestLba = ux_part_first + pb;
++  }
++  if (hostRead4k (0, manifestLba, 1, gScratch) != kIOReturnSuccess) {
++#else
+   if (hostRead4k (0, layout->userdataFirst, 1, gScratch) != kIOReturnSuccess) {
++#endif
+     *why = "userdata first block read";
+     return false;
+   }
+--- a/ShengUfs/RootWindowRead.h
++++ b/ShengUfs/RootWindowRead.h
+@@ -24,6 +24,15 @@ static UfsWindowResult ufsReadWindow (Ops &ops, uint64_t absolute, uint64_t byte
+   UfsWindowGuard<Ops> guard (ops);
+   uint64_t start = absolute + block * 512, remaining = count * 512;
+   UfsWindowResult result = { kIOReturnSuccess, 0 };
+   while (remaining) {
++#if defined(UNIXNU_FILE_ROOT)
++    if (ux_root) {
++      // 'absolute' is relative to the file when ux_root: convert file block
++      // to the physical userdata block through the extent table.
++      uint64_t fileBlock = (start + result.done) / 4096;
++      uint64_t skip = (start + result.done) % 4096;
++      uint64_t pb = 0, run = 0;
++      if (!ux_map(fileBlock, &pb, &run)) { result.status = kIOReturnIOError; break; }
++      uint64_t blocks = (skip + remaining + 4095) / 4096;
++      if (blocks > run) blocks = (uint32_t)run;
++      if (blocks > kDataMax / 4096) blocks = kDataMax / 4096;
++      result.status = ops.read (ux_part_first + pb, (uint32_t)blocks, bounce);
++      if (result.status != kIOReturnSuccess) break;
++      uint64_t usable = blocks * 4096 - skip;
++      if (usable > remaining) usable = remaining;
++      uint64_t copied = ops.copy (result.done, bounce + skip, usable);
++      if (copied != usable) { result.status = kIOReturnIOError; break; }
++      result.done += copied;
++      remaining -= usable;
++      continue;
++    }
++#endif
+     uint64_t lba = (start + result.done) / 4096, skip = (start + result.done) % 4096;
+--- a/ShengUfs/NativeUfs.cpp
++++ b/ShengUfs/NativeUfs.cpp
+@@ -1474,6 +1474,12 @@ static bool hostBringUp (const char **why);
+ #include "RootLayout.h"
++#if defined(UNIXNU_FILE_ROOT)
++// Load the extent table before findRootLayout: the manifest lives in the file.
++static int ux_init_from_dt (void) { return ux_load_extents(); }
++#endif
+@@ -2960,6 +2966,12 @@ bool NativeUfs::start (IOService *provider)
+   const char *why = "";
+   if (!hostBringUp (&why)) { ... }
++#if defined(UNIXNU_FILE_ROOT)
++  if (ux_init_from_dt () != 0) {
++    rootDiagnosticFailure ("unixnu-root-extents missing/invalid");
++    IOFree (layout, sizeof (RootLayout));
++    return false;
++  }
++  IOLog ("NativeUfs: file root: %u extents\n", ux_next);
++#endif
+   RootLayout *layout = static_cast<RootLayout *> (IOMalloc (sizeof (RootLayout)));
+@@ -2997,6 +3009,13 @@ bool NativeUfs::start (IOService *provider)
+       uint64_t absolute = layout->userdataFirst * 4096ULL + layout->window[index].offset;
++#if defined(UNIXNU_FILE_ROOT)
++      if (ux_root) {
++        // absolute is file-relative (offset within the root image).
++        uint64_t fb = layout->window[index].offset / 4096;
++        uint64_t pb = 0, run = 0;
++        if (!ux_map(fb, &pb, &run)) return false;
++        (void)absolute;
++        absolute = 0; // ufsReadWindow's ux_root branch uses block*512 as file offset
++      }
++#endif
+       if (!device || !device->init ... )
