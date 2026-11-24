@@ -62,6 +62,7 @@ jobs:
 
       - name: Generate ADT (with optional extent table)
         run: |
+          mkdir -p out
           EXTRA=""
           if [ -f inputs/root-extents.txt ]; then
             BLOCKS=$(awk '/^[0-9]/{s+=$3} END{print s+0}' inputs/root-extents.txt)
