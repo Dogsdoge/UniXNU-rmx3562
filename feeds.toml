@@ -5,6 +5,14 @@ kind = "soc"
 git = "https://github.com/Dogsdoge/UniXNU-mt6895-common"
 commit = "76fe2f0955ee76fd497c497cd50780945dbaf17e"
 
+# MT6895 UFS driver (3-layer: HakiOS controller core + ios-fuxi extent map + UniXNU IOMedia glue).
+# NOT YET enabled in board.toml: Layer 3 is a design skeleton; enable when build-ready.
+[[source]]
+name = "shengufs-mt6895"
+kind = "component"
+git = "https://github.com/Dogsdoge/ShengUfs-mt6895"
+commit = "c992abbfbf6cb0e3aae6dc5256e0f34b1b85e454"
+
 # The iOS 16.5 kernel source (OS profile os-profiles/ios-16.5-20F66).
 [[source]]
 name = "xnu"
