@@ -207,19 +207,25 @@ jobs:
         working-directory: edk2-mt6895
         run: |
           mkdir -p Common
-          # Use stable202308: the .gitmodules pin (580191...) predates
-          # BaseVariableFlashInfoLib, which pearl.dsc references.
+          # edk2 pin (580191...) predates BaseVariableFlashInfoLib, which
+          # pearl.dsc references — use stable202308. edk2-platforms has no
+          # such tag, so keep the original pin from .gitmodules.
           for pair in \
-            "edk2 edk2-stable202308" \
-            "edk2-platforms edk2-stable202308"; do
+            "edk2 edk2-stable202308 tag" \
+            "edk2-platforms d8232e8816fafb875a3656dda788b6681bc25149 commit"; do
             set -- $pair
-            d="Common/$1"; ref="$2"
+            d="Common/$1"; ref="$2"; kind="$3"
             [ -d "$d/.git" ] && continue
             rm -rf "$d"; mkdir -p "$d"
             git -C "$d" init -q
             git -C "$d" remote add origin "https://github.com/tianocore/$1.git"
-            git -C "$d" fetch -q --depth 1 origin "refs/tags/$ref:refs/tags/$ref"
-            git -C "$d" checkout -q "$ref"
+            if [ "$kind" = tag ]; then
+              git -C "$d" fetch -q --depth 1 origin "refs/tags/$ref:refs/tags/$ref"
+              git -C "$d" checkout -q "$ref"
+            else
+              git -C "$d" fetch -q --depth 1 origin "$ref"
+              git -C "$d" checkout -q FETCH_HEAD
+            fi
           done
           for sub in \
             BaseTools/Source/C/BrotliCompress/brotli \
