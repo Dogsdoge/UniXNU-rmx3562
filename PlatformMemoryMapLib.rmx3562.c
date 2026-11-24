@@ -1,0 +1,96 @@
+/*
+ * RMX3562 (realme GT Neo3, MT6895 / Dimensity 8100) 12GB DRAM memory map.
+ * Generated from live /proc/device-tree/reserved-memory (2026-11-24).
+ * Reserved mblocks are MEM_RES; gaps are filled with ordinary DDR regions.
+ * Framebuffer: 0xfe1af000, 1080x2412, LK scanout, WRITE_THROUGH_XN.
+ */
+#include <Library/BaseLib.h>
+#include <Library/PlatformMemoryMapLib.h>
+
+static ARM_MEMORY_REGION_DESCRIPTOR_EX gDeviceMemoryDescriptorEx[] = {
+    {"Periphs                     ", 0x00000000000, 0x0040000000, AddMem, MEM_RES  , UNCACHEABLE   , RtCode, NS_DEVICE},
+    {"UEFI DDR Low                ", 0x00040000000, 0x0000c00000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"UEFI Stack                  ", 0x00040c00000, 0x0000040000, AddMem, SYS_MEM  , SYS_MEM_CAP   , BsData, WRITE_BACK},
+    {"CPU Vectors                 ", 0x00040c40000, 0x0000010000, AddMem, SYS_MEM  , SYS_MEM_CAP   , BsCode, WRITE_BACK},
+    {"DXE Heap                    ", 0x00040c50000, 0x0007430000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 10-aee_debug_kinfo      ", 0x00048080000, 0x0000010000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 11-pstore               ", 0x00048090000, 0x00000e0000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 12-minirdump            ", 0x00048170000, 0x0000010000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x48180000              ", 0x00048180000, 0x0000080000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 17-BL31-reserved        ", 0x00048200000, 0x0000200000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x48400000              ", 0x00048400000, 0x0000001000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 22-crypto_hw            ", 0x00048401000, 0x0000001000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x48402000              ", 0x00048402000, 0x00082fe000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 13-aee_lk               ", 0x00050700000, 0x0000800000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x50f00000              ", 0x00050f00000, 0x001f100000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 21-tee-reserved         ", 0x00070000000, 0x0005500000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x75500000              ", 0x00075500000, 0x0003700000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 39-me_GPUmputab_PMA     ", 0x00078c00000, 0x0001400000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 37-adsp_image_reserved  ", 0x0007a000000, 0x0001230000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x7b230000              ", 0x0007b230000, 0x00009d0000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 38-me_GPUEB_SHARED      ", 0x0007bc00000, 0x0000200000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 20-tee-secmem           ", 0x0007be00000, 0x0000700000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 43-consys_gps_emi       ", 0x0007c500000, 0x0000100000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 16-platform_mtksmmu_protpgd", 0x0007c600000, 0x0002200000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 7-gz-log                ", 0x0007e800000, 0x0000041000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x7e841000              ", 0x0007e841000, 0x00000bf000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 19-MCUPM-reserved       ", 0x0007e900000, 0x0000100000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 6-unmap2                ", 0x0007ea00000, 0x0000400000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 5-mkp                   ", 0x0007ee00000, 0x0000400000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 4-gz                    ", 0x0007f200000, 0x0000d00000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x7ff00000              ", 0x0007ff00000, 0x00000bf000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 8-log_store             ", 0x0007ffbf000, 0x0000040000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 3-emi_mbist_buf         ", 0x0007ffff000, 0x0000001000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 26-mm_ccu_reserved      ", 0x00080000000, 0x0000100000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x80100000              ", 0x00080100000, 0x0007f00000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 36-ap_md_c_smem         ", 0x00088000000, 0x0005060000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x8d060000              ", 0x0008d060000, 0x0000fa0000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 35-ap_md_nc_smem        ", 0x0008e000000, 0x0000120000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x8e120000              ", 0x0008e120000, 0x00003e0000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 45-consys_emi_reserved  ", 0x0008e500000, 0x0000800000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x8ed00000              ", 0x0008ed00000, 0x0000090000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 29-apu_apusys-rv_aee-coredump", 0x0008ed90000, 0x0000270000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 24-reserve-memory-scp_share", 0x0008f000000, 0x00007a0000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x8f7a0000              ", 0x0008f7a0000, 0x0000160000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 28-apu_apusys-rv_secure ", 0x0008f900000, 0x0000700000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x90000000              ", 0x00090000000, 0x000f56f000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 44-sspm_ap-shared       ", 0x0009f56f000, 0x0000110000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 41-debug_met_res-ram    ", 0x0009f67f000, 0x0000800000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 18-SSPM-reserved        ", 0x0009fe7f000, 0x0000180000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x9ffff000              ", 0x0009ffff000, 0x001c001000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 46-shared-dma-pool_wifi-reserve-memory_dma", 0x000bc000000, 0x0001400000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0xbd400000              ", 0x000bd400000, 0x0000100000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 40-me_vcp_reserved      ", 0x000bd500000, 0x0000800000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0xbdd00000              ", 0x000bdd00000, 0x00000f0000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 30-ccci_tag_mem         ", 0x000bddf0000, 0x0000010000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 27-apu_mvpu_algo        ", 0x000bde00000, 0x0001b00000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 25-SCP-reserved         ", 0x000bf900000, 0x0000500000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"Res 9-atf-log-reserved      ", 0x000bfe00000, 0x0000200000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0xc0000000              ", 0x000c0000000, 0x0010000000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 31-md_mem_usage         ", 0x000d0000000, 0x0002330000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0xd2330000              ", 0x000d2330000, 0x0000cd0000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 32-md_mem_usage         ", 0x000d3000000, 0x0000230000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0xd3230000              ", 0x000d3230000, 0x0000dd0000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 33-md_mem_usage         ", 0x000d4000000, 0x0008a80000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0xdca80000              ", 0x000dca80000, 0x0010b80000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 34-md_mem_usage         ", 0x000ed600000, 0x0000a00000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0xee000000              ", 0x000ee000000, 0x000a000000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 42-adsp_shared_reserved ", 0x000f8000000, 0x0000a50000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0xf8a50000              ", 0x000f8a50000, 0x00045b0000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 23-platform-debug_dfdmcu_dump", 0x000fd000000, 0x0000280000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0xfd280000              ", 0x000fd280000, 0x0000f2f000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 14-framebuffer          ", 0x000fe1af000, 0x0001e50000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_THROUGH_XN},
+    {"DDR 0xfffff000              ", 0x000fffff000, 0x00bffff000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 1-dramc-rk0             ", 0x001bfffe000, 0x0000002000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x1c0000000             ", 0x001c0000000, 0x017fe00000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 15-me_cmdq_reserved     ", 0x0033fe00000, 0x0000100000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+    {"DDR 0x33ff00000             ", 0x0033ff00000, 0x00000fe000, AddMem, SYS_MEM  , SYS_MEM_CAP   , Conv  , WRITE_BACK},
+    {"Res 2-dramc-rk1             ", 0x0033fffe000, 0x0000002000, AddMem, MEM_RES  , SYS_MEM_CAP   , Reserv, WRITE_BACK},
+
+    //------------------- Terminator for MMU ---------------------
+    {"Terminator", 0, 0, 0, 0, 0, 0, 0}};
+
+ARM_MEMORY_REGION_DESCRIPTOR_EX *GetPlatformMemoryMap()
+{
+  return gDeviceMemoryDescriptorEx;
+}
