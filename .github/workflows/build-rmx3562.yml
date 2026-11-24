@@ -199,10 +199,6 @@ jobs:
         working-directory: edk2-mt6895
         run: |
           mkdir -p Common
-          # actions/checkout leaves an insteadOf rewrite on github.com URLs;
-          # drop it so the manual tianocore fetches hit the real remote.
-          git config --global --unset-all url."https://github.com/".insteadOf || true
-          git config --global --unset-all url."git@github.com:".insteadOf || true
           # edk2 pin (580191...) predates BaseVariableFlashInfoLib, which
           # pearl.dsc references — use stable202308. edk2-platforms has no
           # such tag, so keep the original pin from .gitmodules.
