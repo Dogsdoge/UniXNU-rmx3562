@@ -1,0 +1,18 @@
+# Shared MT6895 support: our own SoC repository.
+[[source]]
+name = "mt6895"
+kind = "soc"
+git = "https://github.com/Dogsdoge/UniXNU-mt6895-common"
+commit = "76fe2f0955ee76fd497c497cd50780945dbaf17e"
+
+# The iOS 16.5 kernel source (OS profile os-profiles/ios-16.5-20F66).
+[[source]]
+name = "xnu"
+kind = "refer"
+git = "https://github.com/apple-oss-distributions/xnu.git"
+ref = "xnu-8796.121.2"
+commit = "c54f35ca767986246321eb901baf8f5ff7923f6a"
+darwin = "22.5.0"
+version = "8796.121.2"
+driverkit_tag = "xnu-8796.121.2"
+trustcache_tag = "xnu-8796.101.5"
