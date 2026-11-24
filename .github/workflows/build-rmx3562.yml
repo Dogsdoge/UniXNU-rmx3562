@@ -262,6 +262,9 @@ jobs:
           export PATH="$CLANG38_BIN:$PWD/Common/edk2/BaseTools/BinWrappers/PosixLike:$PATH"
           export WORKSPACE="$PWD"
           export PACKAGES_PATH="$PWD/Platform/Xiaomi:$PWD/Common/edk2:$PWD/Common/edk2-platforms:$PWD/Silicon/MediaTek"
+          # Force edksetup to regenerate Conf/tools_def.txt from the template
+          # (stale Conf from the clone makes CLANG38 undefined).
+          rm -rf Common/edk2/Conf
           source Common/edk2/edksetup.sh >/dev/null 2>&1
           build -p Platform/Xiaomi/pearlPkg/pearl.dsc -a AARCH64 -t CLANG38 -b RELEASE -j$(nproc)
 
