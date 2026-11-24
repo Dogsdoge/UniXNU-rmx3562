@@ -227,9 +227,12 @@ jobs:
               git -C "$d" checkout -q FETCH_HEAD
             fi
           done
-          # Third-party submodules (Zeex/subhook, mipisyst ...) need auth too;
-          # give git a global github.com -> token rewrite so all of them clone.
+          # Third-party submodules need auth; give git a github.com -> token
+          # rewrite. Zeex/subhook (UnitTest-only) was deleted upstream and
+          # breaks a full recursive update, so drop it from .gitmodules first.
           git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+          git -C Common/edk2 config -f .gitmodules --remove-section submodule.UnitTestFrameworkPkg/Library/SubhookLib/subhook 2>/dev/null || true
+          git -C Common/edk2 submodule sync
           git -C Common/edk2 submodule update --init --depth 1 --recursive
 
       # build-pearl.sh cannot be used as-is: its boot.img packaging requires
