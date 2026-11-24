@@ -207,6 +207,10 @@ jobs:
         working-directory: edk2-mt6895
         run: |
           mkdir -p Common
+          # actions/checkout leaves an insteadOf rewrite on github.com URLs;
+          # drop it so the manual tianocore fetches hit the real remote.
+          git config --global --unset-all url."https://github.com/".insteadOf || true
+          git config --global --unset-all url."git@github.com:".insteadOf || true
           # edk2 pin (580191...) predates BaseVariableFlashInfoLib, which
           # pearl.dsc references — use stable202308. edk2-platforms has no
           # such tag, so keep the original pin from .gitmodules.
@@ -220,10 +224,16 @@ jobs:
             git -C "$d" init -q
             git -C "$d" remote add origin "https://github.com/tianocore/$1.git"
             if [ "$kind" = tag ]; then
-              git -C "$d" fetch -q --depth 1 origin "refs/tags/$ref:refs/tags/$ref"
+              for attempt in 1 2 3; do
+                git -C "$d" fetch -q --depth 1 origin "refs/tags/$ref:refs/tags/$ref" && break
+                sleep 3
+              done
               git -C "$d" checkout -q "$ref"
             else
-              git -C "$d" fetch -q --depth 1 origin "$ref"
+              for attempt in 1 2 3; do
+                git -C "$d" fetch -q --depth 1 origin "$ref" && break
+                sleep 3
+              done
               git -C "$d" checkout -q FETCH_HEAD
             fi
           done
