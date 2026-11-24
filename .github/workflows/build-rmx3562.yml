@@ -197,6 +197,8 @@ jobs:
       # the checkout — clone the two pinned trees by hand, then build.
       - name: Materialize EDK2 submodule trees
         working-directory: edk2-mt6895
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           mkdir -p Common
           # edk2 pin (580191...) predates BaseVariableFlashInfoLib, which
@@ -225,8 +227,9 @@ jobs:
               git -C "$d" checkout -q FETCH_HEAD
             fi
           done
-          # Pull ALL edk2 submodules (MipiSysTLib etc.) — cherry-picking a few
-          # leaves .dec references unresolved later in the build.
+          # Third-party submodules (Zeex/subhook, mipisyst ...) need auth too;
+          # give git a global github.com -> token rewrite so all of them clone.
+          git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
           git -C Common/edk2 submodule update --init --depth 1 --recursive
 
       # build-pearl.sh cannot be used as-is: its boot.img packaging requires
