@@ -148,6 +148,13 @@ jobs:
           mkdir -p unixnu/profiles/os
           cp -r rmx3562/os-profiles/ios-16.5-20F66 unixnu/profiles/os/
 
+      # Our board.toml references ShengUfsMt6895, a custom component absent
+      # from upstream components.toml (which only has the SM8550 ShengUfs).
+      - name: Wire MT6895 UFS component into the framework
+        run: |
+          git clone -q --depth 1 https://github.com/Dogsdoge/ShengUfs-mt6895.git shengufs-mt6895
+          bash rmx3562/scripts/wire-shengufs-component.sh unixnu "$PWD/shengufs-mt6895"
+
       - name: Defconfig rmx3562_defconfig
         working-directory: unixnu
         run: python3 unixnu defconfig rmx3562_defconfig -D ../rmx3562
@@ -193,6 +200,31 @@ jobs:
           ref: pearl
           path: edk2-mt6895
           submodules: recursive
+
+      # The fork's .gitmodules points at tianocore/edk2 but Common/ is empty in
+      # the checkout — clone the two pinned trees by hand, then build.
+      - name: Materialize EDK2 submodule trees
+        working-directory: edk2-mt6895
+        run: |
+          mkdir -p Common
+          for pair in \
+            "edk2 5801910013757bd626f67ed77eea6c16a176eebf" \
+            "edk2-platforms d8232e8816fafb875a3656dda788b6681bc25149"; do
+            set -- $pair
+            d="Common/$1"; sha="$2"
+            [ -d "$d/.git" ] && continue
+            rm -rf "$d"; mkdir -p "$d"
+            git -C "$d" init -q
+            git -C "$d" remote add origin "https://github.com/tianocore/$1.git"
+            git -C "$d" fetch -q --depth 1 origin "$sha"
+            git -C "$d" checkout -q FETCH_HEAD
+          done
+          for sub in \
+            BaseTools/Source/C/BrotliCompress/brotli \
+            MdeModulePkg/Library/BrotliCustomDecompressLib/brotli \
+            CryptoPkg/Library/OpensslLib/openssl; do
+            git -C Common/edk2 submodule update --init --depth 1 "$sub"
+          done
 
       # build-pearl.sh cannot be used as-is: its boot.img packaging requires
       # pearl's stock vendor_boot (absent here, and wrong for RMX3562 anyway).
