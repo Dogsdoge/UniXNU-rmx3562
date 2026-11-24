@@ -56,7 +56,7 @@ def node(name, props=(), children=()):
     return n
 
 
-def build(seed=None, qemu=False, highmem=False, device='sweet', dram_size=None, owned_memory_size=None):
+def build(seed=None, qemu=False, highmem=False, device='sweet', dram_size=None, owned_memory_size=None, root_extents=None, root_blocks=None):
     """qemu=True: same tree, but with QEMU virt's GIC addresses and CNTFRQ (tools/qemu-sweet.py).
     dram_size overrides the profile's kernel RAM size (e.g. 0x180000000 on an 8 GB guacamole).
     owned_memory_size emits /chosen/darwinboot-memory-size for the contiguous kernel window."""
@@ -112,6 +112,8 @@ def build(seed=None, qemu=False, highmem=False, device='sweet', dram_size=None, 
         ('effective-production-status-ap', u32(0)),
         ('certificate-security-mode', u32(1)),
         ('effective-security-mode-sep', u32(1)),
+        *([('unixnu-root-extents', b''.join(struct.pack('<QQQ', f, p, c) for f, p, c in root_extents))] if root_extents else []),
+        *([('unixnu-root-blocks', u64(root_blocks))] if root_blocks is not None else []),
     ], [node('memory-map', [ph()]),
         # Local boot policy (kern_csr.c): SIP relaxed like `csrutil disable`
         # (lp-sip0: untrusted kexts, unrestricted FS, task_for_pid, kernel
@@ -242,6 +244,10 @@ if __name__ == '__main__':
                     help='override the kernel RAM size, e.g. 0x180000000 for an 8 GB guacamole')
     ap.add_argument('--owned-memory-size', type=lambda s: int(s, 0), default=None,
                     help='DarwinBoot contiguous window in bytes (256 MiB..8 GiB, 2 MiB steps)')
+    ap.add_argument('--root-extents', default=None,
+                    help='file with extent triples (file_lba part_lba count), one per line, 4K units')
+    ap.add_argument('--root-blocks', type=lambda s: int(s, 0), default=None,
+                    help='total root size in 4K blocks')
     ap.add_argument('--dump', action='store_true')
     args = ap.parse_args()
     if args.dump and os.path.exists(args.out):
@@ -249,8 +255,18 @@ if __name__ == '__main__':
         adt.dump(adt.parse(blob)[0])
         print(f'{args.out}: {len(blob)} bytes (existing file, not rebuilt)', file=sys.stderr)
         sys.exit(0)
+    extents = None
+    if args.root_extents:
+        extents = []
+        for line in open(args.root_extents):
+            line = line.strip()
+            if not line or line.startswith('#'):
+                continue
+            f, p, c = (int(x, 0) for x in line.split())
+            extents.append((f, p, c))
     root = build(qemu=args.qemu, highmem=args.highmem, device=args.device,
-                 dram_size=args.dram_size, owned_memory_size=args.owned_memory_size)
+                 dram_size=args.dram_size, owned_memory_size=args.owned_memory_size,
+                 root_extents=extents, root_blocks=args.root_blocks)
     blob = adt.serialize(root)
     open(args.out, 'wb').write(blob)
     if args.dump:
