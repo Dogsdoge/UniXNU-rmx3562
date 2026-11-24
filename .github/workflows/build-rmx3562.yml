@@ -228,11 +228,11 @@ jobs:
             fi
           done
           # Third-party submodules need auth; give git a github.com -> token
-          # rewrite. Zeex/subhook (UnitTest-only) was deleted upstream and
-          # breaks a full recursive update, so drop it from .gitmodules first.
+          # rewrite. Zeex/subhook (UnitTest-only) was deleted upstream; point
+          # it at an existing repo so the recursive update completes.
           git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
-          git -C Common/edk2 config -f .gitmodules --remove-section submodule.UnitTestFrameworkPkg/Library/SubhookLib/subhook 2>/dev/null || true
-          git -C Common/edk2 submodule sync
+          git -C Common/edk2 config -f .gitmodules submodule.UnitTestFrameworkPkg/Library/SubhookLib/subhook.url https://github.com/tianocore/edk2.git
+          git -C Common/edk2 submodule sync --recursive
           git -C Common/edk2 submodule update --init --depth 1 --recursive
 
       # build-pearl.sh cannot be used as-is: its boot.img packaging requires
