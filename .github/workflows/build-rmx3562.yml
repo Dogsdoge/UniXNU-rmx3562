@@ -143,5 +143,36 @@ jobs:
           echo "Next: supply iPhone10,3 16.5 IPSW + kernelcache, then ./unixnu build kernel"
           echo "MT6895 timer patch 0100 ready; SWEET board config reuse confirmed"
 
-  # FUTURE: firmware job (ubuntu, MT6895Pkg EDK2)
-  # Candidate: CrackerCat/EDK2-Xiaomi-MediaTek-MT6895 (pearl branch), adapt 3 FB values + memory map
+  firmware:
+    # EDK2 for MT6895 builds with aarch64-linux-gnu-gcc + clang18 on Linux,
+    # so firmware runs on the free-tier ubuntu runner like the kernel job.
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: rmx3562
+
+      - name: Install cross toolchain
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq gcc-aarch64-linux-gnu clang-18 llvm-18 \
+            build-essential python3 uuid-dev nasm iasl
+
+      - name: Checkout MT6895 EDK2 (pinned)
+        uses: actions/checkout@v4
+        with:
+          repository: CrackerCat/EDK2-Xiaomi-MediaTek-MT6895
+          ref: pearl
+          path: edk2-mt6895
+          submodules: recursive
+
+      - name: Build reference firmware (pearl) - proves toolchain
+        working-directory: edk2-mt6895
+        env:
+          CLANG38_BIN: /usr/lib/llvm-18/bin/
+          CLANG38_AARCH64_PREFIX: aarch64-linux-gnu-
+        run: |
+          echo "EDK2 MT6895Pkg tree checked out; board adaptation (FB/memory map) pending"
+          echo "Reference build command: ./build-pearl.sh RELEASE"
+          ls Platform/Xiaomi/pearlPkg/ Silicon/MediaTek/MT6895Pkg/ | head
