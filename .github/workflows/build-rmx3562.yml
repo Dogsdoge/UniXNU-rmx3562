@@ -240,6 +240,8 @@ jobs:
       # Build only the EDK2 firmware image carrying our board adaptation.
       - name: Build UEFI FD (pearl adapted for RMX3562)
         working-directory: edk2-mt6895
+        env:
+          GCC5_AARCH64_PREFIX: aarch64-linux-gnu-
         run: |
           # BaseTools' Pccts uses old-style `f()` declarations (GCC 14+ reads
           # them as f(void)) and its makefile hardcodes -Werror for legacy
