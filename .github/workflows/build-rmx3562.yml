@@ -207,17 +207,19 @@ jobs:
         working-directory: edk2-mt6895
         run: |
           mkdir -p Common
+          # Use stable202308: the .gitmodules pin (580191...) predates
+          # BaseVariableFlashInfoLib, which pearl.dsc references.
           for pair in \
-            "edk2 5801910013757bd626f67ed77eea6c16a176eebf" \
-            "edk2-platforms d8232e8816fafb875a3656dda788b6681bc25149"; do
+            "edk2 edk2-stable202308" \
+            "edk2-platforms edk2-stable202308"; do
             set -- $pair
-            d="Common/$1"; sha="$2"
+            d="Common/$1"; ref="$2"
             [ -d "$d/.git" ] && continue
             rm -rf "$d"; mkdir -p "$d"
             git -C "$d" init -q
             git -C "$d" remote add origin "https://github.com/tianocore/$1.git"
-            git -C "$d" fetch -q --depth 1 origin "$sha"
-            git -C "$d" checkout -q FETCH_HEAD
+            git -C "$d" fetch -q --depth 1 origin "refs/tags/$ref:refs/tags/$ref"
+            git -C "$d" checkout -q "$ref"
           done
           for sub in \
             BaseTools/Source/C/BrotliCompress/brotli \
