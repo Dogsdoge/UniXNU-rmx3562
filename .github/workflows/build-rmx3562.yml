@@ -184,20 +184,27 @@ jobs:
           sudo apt-get install -y -qq gcc-aarch64-linux-gnu clang-18 llvm-18 \
             build-essential python3 uuid-dev nasm iasl
 
-      - name: Checkout MT6895 EDK2 (pinned)
+      # Our fork carries the RMX3562 board adaptation (FB 0xFE1AF000, height
+      # 2412, 46-region memory map) in pearl.dsc — upstream pearl does not.
+      - name: Checkout RMX3562 EDK2 fork (pearl + board adaptation)
         uses: actions/checkout@v4
         with:
-          repository: CrackerCat/EDK2-Xiaomi-MediaTek-MT6895
+          repository: Dogsdoge/EDK2-MT6895-RMX3562
           ref: pearl
           path: edk2-mt6895
           submodules: recursive
 
-      - name: Build reference firmware (pearl) - proves toolchain
+      - name: Build UEFI firmware (pearl adapted for RMX3562)
         working-directory: edk2-mt6895
         env:
           CLANG38_BIN: /usr/lib/llvm-18/bin/
           CLANG38_AARCH64_PREFIX: aarch64-linux-gnu-
-        run: |
-          echo "EDK2 MT6895Pkg tree checked out; board adaptation (FB/memory map) pending"
-          echo "Reference build command: ./build-pearl.sh RELEASE"
-          ls Platform/Xiaomi/pearlPkg/ Silicon/MediaTek/MT6895Pkg/ | head
+        run: ./build-pearl.sh RELEASE
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rmx3562-uefi
+          path: |
+            edk2-mt6895/Build/pearl/RELEASE_CLANG38/FV/PEARL_UEFI.fd
+            edk2-mt6895/Build/boot-pearl.img
+          if-no-files-found: error
