@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: UniXNU Port <port@local>
+Date: Tue, 24 Nov 2026 00:00:00 +0000
+Subject: [PATCH] MT6895: use standard ARM PPI 11 for architected timer
+
+Reuse the SWEET generic ARM64 board config (ARMv8.2, 16K pages, GICv3,
+no PAC), but change vtimer INTID from Qualcomm's non-standard 19 to the
+standard ARM PPI 11 (MT6895 / Dimensity 8100).
+
+Live evidence (RMX3562, read-only 2026-11-24):
+  /proc/interrupts: IRQ 27 "GICv3 ... arch_timer" => PPI 11
+  /proc/cpuinfo: 4x A55 (0xd05) + 4x A78 (0xd41), armv8.2-a+crypto
+---
+ pexpert/pexpert/arm64/SWEET.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/pexpert/pexpert/arm64/SWEET.h b/pexpert/pexpert/arm64/SWEET.h
+--- a/pexpert/pexpert/arm64/SWEET.h
++++ b/pexpert/pexpert/arm64/SWEET.h
+@@ -60,7 +60,7 @@
+  * Qualcomm numbers the architected timer PPIs 1/2/3/0 (secure phys, phys,
+  * virt, hyp) instead of the usual 13/14/11/10: the virtual timer XNU uses
+  * (CNTV) is INTID 16 + 3 = 19.
++ * On MT6895 the architected timer uses the standard ARM PPI 11 instead.
+  */
+-#define SWEET_VTIMER_INTID        19
++#define SWEET_VTIMER_INTID        11
+ #define SWEET_IPI_SGI             1       // SGI used for cross-CPU signals
+ 
+ #define GIC_SPURIOUS_IRQ          1023    // IRQ no. for GIC spurious interrupt
+--
+2.39.0
