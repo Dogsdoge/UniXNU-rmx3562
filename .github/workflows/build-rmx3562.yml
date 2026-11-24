@@ -229,12 +229,9 @@ jobs:
               git -C "$d" checkout -q FETCH_HEAD
             fi
           done
-          for sub in \
-            BaseTools/Source/C/BrotliCompress/brotli \
-            MdeModulePkg/Library/BrotliCustomDecompressLib/brotli \
-            CryptoPkg/Library/OpensslLib/openssl; do
-            git -C Common/edk2 submodule update --init --depth 1 "$sub"
-          done
+          # Pull ALL edk2 submodules (MipiSysTLib etc.) — cherry-picking a few
+          # leaves .dec references unresolved later in the build.
+          git -C Common/edk2 submodule update --init --depth 1 --recursive
 
       # build-pearl.sh cannot be used as-is: its boot.img packaging requires
       # pearl's stock vendor_boot (absent here, and wrong for RMX3562 anyway).
