@@ -235,6 +235,10 @@ jobs:
           CLANG38_BIN: /usr/lib/llvm-18/bin/
           CLANG38_AARCH64_PREFIX: aarch64-linux-gnu-
         run: |
+          # BaseTools' Pccts (dlg/antlr) uses old-style `f()` declarations that
+          # GCC 14+ reads as `f(void)`; -std=gnu89 keeps them as unspecified args.
+          sudo sh -c 'printf "#!/bin/sh\nexec /usr/bin/gcc -std=gnu89 \"\$@\"\n" > /usr/local/bin/cc; chmod +x /usr/local/bin/cc'
+          sudo sh -c 'printf "#!/bin/sh\nexec /usr/bin/gcc -std=gnu89 \"\$@\"\n" > /usr/local/bin/gcc; chmod +x /usr/local/bin/gcc'
           make -C Common/edk2/BaseTools -j$(nproc)
           export PATH="$CLANG38_BIN:$PWD/Common/edk2/BaseTools/BinWrappers/PosixLike:$PATH"
           export WORKSPACE="$PWD"
