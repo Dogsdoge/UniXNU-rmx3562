@@ -1,0 +1,18 @@
+# Kernel configuration: CONFIG_XNU_<NAME> becomes XNU_<NAME> for the kernel build script.
+# Applied after arch:configs/common.config, soc:configs/mt6895.config and os:configs/ios.config.
+#
+# RMX3562 (MT6895 / Dimensity 8100). SoC-level gates come from mt6895-common;
+# this file holds device-level decisions only.
+
+CONFIG_XNU_ARM_DT_PLATFORM=y
+CONFIG_XNU_ARMCPU=y
+CONFIG_XNU_CRYPTO_BOOTSTRAP="prelinked"
+
+# Storage: iOS root lives in a pinned raw-block file in userdata (DSU method).
+# Access goes through the ShengUfs extent layer (to be ported), NOT a native
+# partition. Keep the native UFS partition path off until that layer is ready.
+# CONFIG_XNU_NATIVE_UFS is not set
+
+# Display: LK-initialized framebuffer at 0xFE1AF000 (RMX3562), copied by GopFramebuffer.
+# Input: Synaptics S3910 @ I2C and Tianma ILI7838A panel need device drivers (TBD).
+# CONFIG_XNU_NATIVE_GPU is not set
