@@ -1,0 +1,245 @@
+{
+  "device": "RMX3562",
+  "soc": "MT6895",
+  "source": "live /proc/device-tree/reserved-memory (read-only 2026-11-24)",
+  "count": 46,
+  "regions": [
+    {
+      "name": "mblock-10-aee_debug_kinfo",
+      "addr": "0x48080000",
+      "size": "0x10000"
+    },
+    {
+      "name": "mblock-11-pstore",
+      "addr": "0x48090000",
+      "size": "0xe0000"
+    },
+    {
+      "name": "mblock-12-minirdump",
+      "addr": "0x48170000",
+      "size": "0x10000"
+    },
+    {
+      "name": "mblock-17-BL31-reserved",
+      "addr": "0x48200000",
+      "size": "0x200000"
+    },
+    {
+      "name": "mblock-22-crypto_hw",
+      "addr": "0x48401000",
+      "size": "0x1000"
+    },
+    {
+      "name": "mblock-13-aee_lk",
+      "addr": "0x50700000",
+      "size": "0x800000"
+    },
+    {
+      "name": "mblock-21-tee-reserved",
+      "addr": "0x70000000",
+      "size": "0x5500000"
+    },
+    {
+      "name": "mblock-39-me_GPUmputab_PMA",
+      "addr": "0x78c00000",
+      "size": "0x1400000"
+    },
+    {
+      "name": "mblock-37-adsp_image_reserved",
+      "addr": "0x7a000000",
+      "size": "0x1230000"
+    },
+    {
+      "name": "mblock-38-me_GPUEB_SHARED",
+      "addr": "0x7bc00000",
+      "size": "0x200000"
+    },
+    {
+      "name": "mblock-20-tee-secmem",
+      "addr": "0x7be00000",
+      "size": "0x700000"
+    },
+    {
+      "name": "mblock-43-consys_gps_emi",
+      "addr": "0x7c500000",
+      "size": "0x100000"
+    },
+    {
+      "name": "mblock-16-platform_mtksmmu_protpgd",
+      "addr": "0x7c600000",
+      "size": "0x2200000"
+    },
+    {
+      "name": "mblock-7-gz-log",
+      "addr": "0x7e800000",
+      "size": "0x41000"
+    },
+    {
+      "name": "mblock-19-MCUPM-reserved",
+      "addr": "0x7e900000",
+      "size": "0x100000"
+    },
+    {
+      "name": "mblock-6-unmap2",
+      "addr": "0x7ea00000",
+      "size": "0x400000"
+    },
+    {
+      "name": "mblock-5-mkp",
+      "addr": "0x7ee00000",
+      "size": "0x400000"
+    },
+    {
+      "name": "mblock-4-gz",
+      "addr": "0x7f200000",
+      "size": "0xd00000"
+    },
+    {
+      "name": "mblock-8-log_store",
+      "addr": "0x7ffbf000",
+      "size": "0x40000"
+    },
+    {
+      "name": "mblock-3-emi_mbist_buf",
+      "addr": "0x7ffff000",
+      "size": "0x1000"
+    },
+    {
+      "name": "mblock-26-mm_ccu_reserved",
+      "addr": "0x80000000",
+      "size": "0x100000"
+    },
+    {
+      "name": "mblock-36-ap_md_c_smem",
+      "addr": "0x88000000",
+      "size": "0x5060000"
+    },
+    {
+      "name": "mblock-35-ap_md_nc_smem",
+      "addr": "0x8e000000",
+      "size": "0x120000"
+    },
+    {
+      "name": "mblock-45-consys_emi_reserved",
+      "addr": "0x8e500000",
+      "size": "0x800000"
+    },
+    {
+      "name": "mblock-29-apu_apusys-rv_aee-coredump",
+      "addr": "0x8ed90000",
+      "size": "0x270000"
+    },
+    {
+      "name": "mblock-24-reserve-memory-scp_share",
+      "addr": "0x8f000000",
+      "size": "0x7a0000"
+    },
+    {
+      "name": "mblock-28-apu_apusys-rv_secure",
+      "addr": "0x8f900000",
+      "size": "0x700000"
+    },
+    {
+      "name": "mblock-44-sspm_ap-shared",
+      "addr": "0x9f56f000",
+      "size": "0x110000"
+    },
+    {
+      "name": "mblock-41-debug_met_res-ram",
+      "addr": "0x9f67f000",
+      "size": "0x800000"
+    },
+    {
+      "name": "mblock-18-SSPM-reserved",
+      "addr": "0x9fe7f000",
+      "size": "0x180000"
+    },
+    {
+      "name": "mblock-46-shared-dma-pool_wifi-reserve-memory_dma",
+      "addr": "0xbc000000",
+      "size": "0x1400000"
+    },
+    {
+      "name": "mblock-40-me_vcp_reserved",
+      "addr": "0xbd500000",
+      "size": "0x800000"
+    },
+    {
+      "name": "mblock-30-ccci_tag_mem",
+      "addr": "0xbddf0000",
+      "size": "0x10000"
+    },
+    {
+      "name": "mblock-27-apu_mvpu_algo",
+      "addr": "0xbde00000",
+      "size": "0x1b00000"
+    },
+    {
+      "name": "mblock-25-SCP-reserved",
+      "addr": "0xbf900000",
+      "size": "0x500000"
+    },
+    {
+      "name": "mblock-9-atf-log-reserved",
+      "addr": "0xbfe00000",
+      "size": "0x200000"
+    },
+    {
+      "name": "mblock-31-md_mem_usage",
+      "addr": "0xd0000000",
+      "size": "0x2330000"
+    },
+    {
+      "name": "mblock-32-md_mem_usage",
+      "addr": "0xd3000000",
+      "size": "0x230000"
+    },
+    {
+      "name": "mblock-33-md_mem_usage",
+      "addr": "0xd4000000",
+      "size": "0x8a80000"
+    },
+    {
+      "name": "mblock-34-md_mem_usage",
+      "addr": "0xed600000",
+      "size": "0xa00000"
+    },
+    {
+      "name": "mblock-42-adsp_shared_reserved",
+      "addr": "0xf8000000",
+      "size": "0xa50000"
+    },
+    {
+      "name": "mblock-23-platform-debug_dfdmcu_dump",
+      "addr": "0xfd000000",
+      "size": "0x280000"
+    },
+    {
+      "name": "mblock-14-framebuffer",
+      "addr": "0xfe1af000",
+      "size": "0x1e50000"
+    },
+    {
+      "name": "mblock-1-dramc-rk0",
+      "addr": "0x1bfffe000",
+      "size": "0x2000"
+    },
+    {
+      "name": "mblock-15-me_cmdq_reserved",
+      "addr": "0x33fe00000",
+      "size": "0x100000"
+    },
+    {
+      "name": "mblock-2-dramc-rk1",
+      "addr": "0x33fffe000",
+      "size": "0x2000"
+    }
+  ],
+  "notes": {
+    "framebuffer": "0xfe1af000 30MiB - LK scanout, must be write-through for GopFramebuffer",
+    "tee_reserved": "0x70000000 85MiB - note: region 7 earlier security analysis",
+    "gz": "0x7f200000 13MiB - GenieZone secure world",
+    "bl31": "0x48200000 2MiB - ATF",
+    "ramoops": "0x48090000 0xe0000"
+  }
+}
