@@ -194,17 +194,24 @@ jobs:
           path: edk2-mt6895
           submodules: recursive
 
-      - name: Build UEFI firmware (pearl adapted for RMX3562)
+      # build-pearl.sh cannot be used as-is: its boot.img packaging requires
+      # pearl's stock vendor_boot (absent here, and wrong for RMX3562 anyway).
+      # Build only the EDK2 firmware image carrying our board adaptation.
+      - name: Build UEFI FD (pearl adapted for RMX3562)
         working-directory: edk2-mt6895
         env:
           CLANG38_BIN: /usr/lib/llvm-18/bin/
           CLANG38_AARCH64_PREFIX: aarch64-linux-gnu-
-        run: ./build-pearl.sh RELEASE
+        run: |
+          make -C Common/edk2/BaseTools -j$(nproc)
+          export PATH="$CLANG38_BIN:$PWD/Common/edk2/BaseTools/BinWrappers/PosixLike:$PATH"
+          export WORKSPACE="$PWD"
+          export PACKAGES_PATH="$PWD/Platform/Xiaomi:$PWD/Common/edk2:$PWD/Common/edk2-platforms:$PWD/Silicon/MediaTek"
+          source Common/edk2/edksetup.sh >/dev/null 2>&1
+          build -p Platform/Xiaomi/pearlPkg/pearl.dsc -a AARCH64 -t CLANG38 -b RELEASE -j$(nproc)
 
       - uses: actions/upload-artifact@v4
         with:
           name: rmx3562-uefi
-          path: |
-            edk2-mt6895/Build/pearl/RELEASE_CLANG38/FV/PEARL_UEFI.fd
-            edk2-mt6895/Build/boot-pearl.img
+          path: edk2-mt6895/Build/pearl/RELEASE_CLANG38/FV/PEARL_UEFI.fd
           if-no-files-found: error
