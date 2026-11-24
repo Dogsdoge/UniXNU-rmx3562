@@ -9,9 +9,11 @@ CONFIG_XNU_ARMCPU=y
 CONFIG_XNU_CRYPTO_BOOTSTRAP="prelinked"
 
 # Storage: iOS root lives in a pinned raw-block file in userdata (DSU method).
-# Access goes through the ShengUfs extent layer (to be ported), NOT a native
-# partition. Keep the native UFS partition path off until that layer is ready.
-# CONFIG_XNU_NATIVE_UFS is not set
+# ShengUfs-mt6895 (3-layer driver) provides native UFS + extent mapping;
+# its archive is selected in board.toml [kernel] archives when build-ready.
+CONFIG_XNU_NATIVE_UFS=y
+CONFIG_XNU_BUILD_ARCHIVES=y
+CONFIG_XNU_EXTRA_LD_ARCHIVES="-Wl,-force_load,{tree}/build/ShengUfsMt6895/libShengUfsMt6895.a"
 
 # Display: LK-initialized framebuffer at 0xFE1AF000 (RMX3562), copied by GopFramebuffer.
 # Input: Synaptics S3910 @ I2C and Tianma ILI7838A panel need device drivers (TBD).
