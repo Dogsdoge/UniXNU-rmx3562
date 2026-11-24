@@ -1,0 +1,100 @@
+name: build-rmx3562
+
+# Staged build for UniXNU iOS 16 on realme RMX3562 / MT6895.
+#
+# Unlike raphael (SM8150), MT6895 has NO turnkey kernel or UEFI port yet.
+# This workflow therefore runs the parts that are ready TODAY:
+#   1. validate hardware profile + ADT generation + SHNGROOT manifest
+#   2. (future) kernel job - once the MT6895 xnu-8796 board config is ready
+#   3. (future) firmware job - once an MT6895Pkg UEFI tree is pinned
+# Each stage is gated: it fails loudly rather than producing a bogus image.
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - board.toml
+      - configs/**
+      - dts/**
+      - os-profiles/**
+      - scripts/**
+      - patches/**
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Validate device profile
+        run: |
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, 'scripts')
+          import devices
+          d = devices.get('rmx3562')
+          assert d['soc_compat'] == 'mediatek,mt6895'
+          assert d['gicd'] == 0x0c000000
+          assert d['timebase'] == 13000000
+          assert d['fb_w'] == 1080 and d['fb_h'] == 2412
+          assert d['cpus'] == 8
+          print('device profile: OK', d['name'])
+          PY
+
+      - name: Validate iOS 16 profile completeness
+        run: |
+          set -e
+          P=os-profiles/ios-16.5-20F66
+          test -f "$P/profile.toml"
+          test -f "$P/configs/ios.config"
+          test -f "$P/patches/xnu/series"
+          N=$(find "$P/patches/xnu-8796" -name '*.patch' | wc -l)
+          echo "xnu-8796 patches: $N"
+          test "$N" -eq 12
+
+      - name: Generate ADT (with optional extent table)
+        run: |
+          EXTRA=""
+          if [ -f inputs/root-extents.txt ]; then
+            BLOCKS=$(awk '/^[0-9]/{s+=$3} END{print s+0}' inputs/root-extents.txt)
+            EXTRA="--root-extents inputs/root-extents.txt --root-blocks $BLOCKS"
+          fi
+          python3 scripts/mkadt.py --device rmx3562 --dump $EXTRA out/rmx3562.adt
+          test -s out/rmx3562.adt
+
+      - name: Validate ADT hardware values
+        run: |
+          python3 scripts/adt.py dump out/rmx3562.adt > out/adt.txt
+          grep -q 'mediatek,mt6895' out/adt.txt
+          grep -q 'timebase-frequency = 0xc65d40' out/adt.txt
+          echo 'ADT: OK'
+
+      - name: Generate a sample SHNGROOT manifest (self-test)
+        run: |
+          python3 scripts/mkshngroot.py \
+            --out out/sample-manifest.bin \
+            --version 1 \
+            --image-bytes 2684354560 \
+            --window 'System=1048576=2400000000' \
+            --window 'SystemOS=2401050624=282255360'
+          test "$(wc -c < out/sample-manifest.bin)" -eq 4096
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rmx3562-validation
+          path: out/
+          if-no-files-found: error
+
+  # FUTURE: kernel job (macos-14, xnu-8796 with MT6895 board config)
+  # BLOCKED ON: MT6895 xnu-8796 defconfig + sweet platform patches for MTK GIC/UFS
+  #
+  # FUTURE: firmware job (ubuntu, MT6895Pkg EDK2)
+  # BLOCKED ON: pinning an MT6895 UEFI tree (candidate: CrackerCat/EDK2-Xiaomi-MediaTek-MT6895)
