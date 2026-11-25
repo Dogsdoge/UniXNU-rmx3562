@@ -160,7 +160,7 @@ jobs:
             tcsh unifdef cmake clang lld mtools build-essential pkg-config \
             ninja-build python3 python3-dev xz-utils libssl-dev zlib1g-dev \
             libbsd-dev uuid-dev llvm-dev libclang-dev device-tree-compiler
-          sudo ln -sf /usr/bin/llvm-config-* /usr/bin/llvm-config
+          sudo ln -sf /usr/bin/llvm-config-18 /usr/bin/llvm-config
 
       - name: Verify toolchain
         working-directory: unixnu
