@@ -112,13 +112,10 @@ jobs:
       # actions/cache can write); on a hit we sudo-extract instead of rebuilding.
       - name: Restore cached toolchain
         id: tc-cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: toolchain-cache/unixnu-linux.tar.zst
           key: unixnu-linux-toolchain-v1
-          # Save the toolchain even if the later kernel build fails — otherwise
-          # every failed attempt recompiles clang for 45 min all over again.
-          save-always: true
 
       - name: Unpack cached toolchain (hit)
         if: steps.tc-cache.outputs.cache-hit == 'true'
@@ -136,12 +133,21 @@ jobs:
         working-directory: unixnu
         run: sudo python3 scripts/linux/setup-toolchain.py --package-manager apt -j 4
 
-      - name: Save toolchain to cache (miss)
+      - name: Package toolchain for cache (miss)
         if: steps.tc-cache.outputs.cache-hit != 'true'
         run: |
           mkdir -p toolchain-cache
           sudo tar --zstd -cf toolchain-cache/unixnu-linux.tar.zst -C / opt/unixnu-linux
           sudo chown -R "$USER":"$(id -gn)" toolchain-cache
+
+      # actions/cache/save has no post-step caveat: it saves even when a later
+      # build step fails, so one successful compile pays for all future runs.
+      - name: Save toolchain cache (miss)
+        if: steps.tc-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: toolchain-cache/unixnu-linux.tar.zst
+          key: unixnu-linux-toolchain-v1
 
       - name: Verify toolchain
         working-directory: unixnu
