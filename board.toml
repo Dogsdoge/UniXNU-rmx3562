@@ -28,6 +28,7 @@ archives = [
   "component:RamBlock",
   "component:AppleKeyStoreState",
   "component:ShengUfsMt6895",
+  "component:S3910",
 ]
 
 [device_tree]
