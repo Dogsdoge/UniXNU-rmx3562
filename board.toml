@@ -9,7 +9,7 @@ description = "realme GT Neo3 (RMX3562) / MT6895 (Dimensity 8100) - UniXNU iOS 1
 kit = "rmx3562"
 
 [components]
-include = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "XnuPrelink", "DarwinBoot", "GopFramebuffer", "RamBlock", "AppleKeyStoreState", "ShengUfsMt6895"]
+include = ["ArmDTPlatform", "ArmCpu", "SoftwareAES", "XnuPrelink", "DarwinBoot", "GopFramebuffer", "RamBlock", "AppleKeyStoreState", "ShengUfsMt6895", "S3910"]
 
 [kernel]
 defconfig = "rmx3562_defconfig"

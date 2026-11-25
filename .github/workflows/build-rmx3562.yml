@@ -197,6 +197,13 @@ jobs:
           git clone -q --depth 1 https://github.com/Dogsdoge/ShengUfs-mt6895.git shengufs-mt6895
           bash rmx3562/scripts/wire-shengufs-component.sh unixnu "$PWD/shengufs-mt6895"
 
+      # S3910 is a board-local component absent from the framework catalog.
+      # Wire it before defconfig so its build recipe runs in the kernel stage,
+      # after patches.prepare() creates the applied XNU tree.
+      - name: Wire S3910 touch component into the framework
+        run: |
+          bash rmx3562/components/s3910/wire-s3910-component.sh unixnu "$PWD/rmx3562"
+
       - name: Defconfig rmx3562_defconfig
         working-directory: unixnu
         run: python3 unixnu defconfig rmx3562_defconfig -D ../rmx3562
