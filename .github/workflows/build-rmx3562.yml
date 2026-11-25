@@ -160,7 +160,10 @@ jobs:
             tcsh unifdef cmake clang lld mtools build-essential pkg-config \
             ninja-build python3 python3-dev xz-utils libssl-dev zlib1g-dev \
             libbsd-dev uuid-dev llvm-dev libclang-dev device-tree-compiler
-          sudo ln -sf /usr/bin/llvm-config-18 /usr/bin/llvm-config
+          # The apt version of llvm-config varies (18/19/...); link whichever
+          # binary actually exists, otherwise --check reports it missing.
+          LLVM_CFG=$(ls /usr/bin/llvm-config-[0-9]* 2>/dev/null | head -1)
+          if [ -n "$LLVM_CFG" ]; then sudo ln -sf "$LLVM_CFG" /usr/bin/llvm-config; fi
 
       - name: Verify toolchain
         working-directory: unixnu
