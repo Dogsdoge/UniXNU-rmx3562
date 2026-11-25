@@ -266,5 +266,5 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: rmx3562-uefi
-          path: edk2-mt6895/Build/pearl/RELEASE_CLANG38/FV/PEARL_UEFI.fd
+          path: edk2-mt6895/Build/pearl/RELEASE_GCC5/FV/PEARL_UEFI.fd
           if-no-files-found: error
