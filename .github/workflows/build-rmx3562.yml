@@ -123,13 +123,10 @@ jobs:
           sudo mkdir -p /opt/unixnu-linux
           sudo tar --zstd -xf toolchain-cache/unixnu-linux.tar.zst -C /
 
-      - name: Preview Linux toolchain dependencies
-        if: steps.tc-cache.outputs.cache-hit != 'true'
-        working-directory: unixnu
-        run: python3 scripts/linux/setup-toolchain.py --print-packages
-
-      - name: Install UniXNU Linux toolchain (miss)
-        if: steps.tc-cache.outputs.cache-hit != 'true'
+      # setup-toolchain.py is idempotent: on a cache hit it skips the ~45-min
+      # clang build but still installs apt deps and recreates /usr/bin/xcrun
+      # and other shims (which live outside /opt and aren't in the tarball).
+      - name: Install UniXNU Linux toolchain (idempotent)
         working-directory: unixnu
         run: sudo python3 scripts/linux/setup-toolchain.py --package-manager apt -j 4
 
