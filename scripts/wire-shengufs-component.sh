@@ -38,7 +38,7 @@ source_files = ["UfsHc.c", "UfsExtents.c", "Mt6895UfsBlock.cpp"]
 runtime_identifiers = ["ShengUfsMt6895", "UfsHc.c", "UfsExtents.c", "Mt6895UfsBlock.cpp"]
 build_stage = "kernel"
 build = ["build.py"]
-outputs = ["build/ShengUfsMt6895/libShengUfsMt6895.a"]
+outputs = ["build/sheng-ufs/libShengUfs.a"]
 '''
     with cat.open('a') as f:
         f.write(entry)
