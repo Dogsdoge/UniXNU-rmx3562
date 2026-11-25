@@ -13,7 +13,9 @@ CONFIG_XNU_CRYPTO_BOOTSTRAP="prelinked"
 # its archive is selected in board.toml [kernel] archives when build-ready.
 CONFIG_XNU_NATIVE_UFS=y
 CONFIG_XNU_BUILD_ARCHIVES=y
-CONFIG_XNU_EXTRA_LD_ARCHIVES="-Wl,-force_load,{tree}/build/ShengUfsMt6895/libShengUfsMt6895.a"
+# Do NOT set XNU_EXTRA_LD_ARCHIVES here: with CONFIG_XNU_NATIVE_UFS=y the
+# build-xnu script already force-loads build/sheng-ufs/libShengUfs.a. Adding a
+# second -force_load here links the same objects twice (duplicate symbols).
 
 # Display: LK-initialized framebuffer at 0xFE1AF000 (RMX3562), copied by GopFramebuffer.
 # Input: Synaptics S3910 @ I2C and Tianma ILI7838A panel need device drivers (TBD).
