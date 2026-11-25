@@ -116,6 +116,9 @@ jobs:
         with:
           path: toolchain-cache/unixnu-linux.tar.zst
           key: unixnu-linux-toolchain-v1
+          # Save the toolchain even if the later kernel build fails — otherwise
+          # every failed attempt recompiles clang for 45 min all over again.
+          save-always: true
 
       - name: Unpack cached toolchain (hit)
         if: steps.tc-cache.outputs.cache-hit == 'true'
