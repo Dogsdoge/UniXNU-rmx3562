@@ -208,7 +208,10 @@ jobs:
         env:
           UNIXNU_TOOLCHAIN: /opt/unixnu-linux
         run: |
-          python3 unixnu build kernel -D ../rmx3562 \
+          # --skip-prelink: the profile's kits/apollo/prelink/emit_prelink_ios16_5.py
+          # is a HakiOS tool absent from this framework. Ship the native kernel
+          # as kernel.macho; Apple-kext prelink can be added once that tool exists.
+          python3 unixnu build kernel -D ../rmx3562 --skip-prelink \
             --ipsw "https://updates.cdn-apple.com/2023SpringFCS/fullrestores/032-85130/6AB0D10A-8AF9-4F6C-8CF5-A1B315CABE88/iPhone10,3,iPhone10,6_16.5_20F66_Restore.ipsw"
 
       - uses: actions/upload-artifact@v4
