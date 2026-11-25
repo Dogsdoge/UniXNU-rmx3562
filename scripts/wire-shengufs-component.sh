@@ -57,4 +57,14 @@ else
   echo "$target already exists (skip)"
 fi
 
+# The framework assembles each component's build script into tree/scripts/
+# and preflight checks for tree/scripts/build.py — copy ours into the
+# framework scripts dir so "build = ['build.py']" resolves there.
+if [ ! -f "$UNIXNU_DIR/scripts/build.py" ]; then
+  cp "$SHENG_DIR/build.py" "$UNIXNU_DIR/scripts/build.py"
+  echo "copied build.py -> $UNIXNU_DIR/scripts/build.py"
+else
+  echo "scripts/build.py already exists (skip)"
+fi
+
 echo "DONE: ShengUfsMt6895 wired into $UNIXNU_DIR"
