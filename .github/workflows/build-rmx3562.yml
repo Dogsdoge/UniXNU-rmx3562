@@ -107,13 +107,38 @@ jobs:
           repository: UniXNU/UniXNU
           path: unixnu
 
+      # The toolchain takes ~45 min to build from source on every run. Cache
+      # the installed /opt/unixnu-linux as a tarball in the workspace (where
+      # actions/cache can write); on a hit we sudo-extract instead of rebuilding.
+      - name: Restore cached toolchain
+        id: tc-cache
+        uses: actions/cache@v4
+        with:
+          path: toolchain-cache/unixnu-linux.tar.zst
+          key: unixnu-linux-toolchain-v1
+
+      - name: Unpack cached toolchain (hit)
+        if: steps.tc-cache.outputs.cache-hit == 'true'
+        run: |
+          sudo mkdir -p /opt/unixnu-linux
+          sudo tar --zstd -xf toolchain-cache/unixnu-linux.tar.zst -C /
+
       - name: Preview Linux toolchain dependencies
+        if: steps.tc-cache.outputs.cache-hit != 'true'
         working-directory: unixnu
         run: python3 scripts/linux/setup-toolchain.py --print-packages
 
-      - name: Install UniXNU Linux toolchain
+      - name: Install UniXNU Linux toolchain (miss)
+        if: steps.tc-cache.outputs.cache-hit != 'true'
         working-directory: unixnu
         run: sudo python3 scripts/linux/setup-toolchain.py --package-manager apt -j 4
+
+      - name: Save toolchain to cache (miss)
+        if: steps.tc-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p toolchain-cache
+          sudo tar --zstd -cf toolchain-cache/unixnu-linux.tar.zst -C / opt/unixnu-linux
+          sudo chown -R "$USER":"$(id -gn)" toolchain-cache
 
       - name: Verify toolchain
         working-directory: unixnu
