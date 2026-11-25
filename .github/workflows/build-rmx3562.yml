@@ -149,6 +149,19 @@ jobs:
           path: toolchain-cache/unixnu-linux.tar.zst
           key: unixnu-linux-toolchain-v1
 
+      # On a cache hit we skipped setup-toolchain.py, which is what installs
+      # the system-level host deps (llvm-config, libclang...). Install those
+      # unconditionally — apt is fast and the toolchain itself stays cached.
+      - name: Install host deps for toolchain verification
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq --no-install-recommends \
+            git patch flex bison bzip2 cpio rsync curl wget ca-certificates \
+            tcsh unifdef cmake clang lld mtools build-essential pkg-config \
+            ninja-build python3 python3-dev xz-utils libssl-dev zlib1g-dev \
+            libbsd-dev uuid-dev llvm-dev libclang-dev device-tree-compiler
+          sudo ln -sf /usr/bin/llvm-config-* /usr/bin/llvm-config
+
       - name: Verify toolchain
         working-directory: unixnu
         run: python3 scripts/linux/setup-toolchain.py --check
