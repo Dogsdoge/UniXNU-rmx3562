@@ -57,7 +57,8 @@ def main():
         if base > cursor:
             lines.append(region(f'DDR 0x{cursor:x}', cursor, base - cursor,
                                 'SYS_MEM', 'SYS_MEM_CAP', 'Conv', 'WRITE_BACK'))
-        short = name.replace('mblock-', 'Res ')
+        # Region names are stored in a 32-byte char array (31 + NUL).
+        short = name.replace('mblock-', 'Res ')[:31]
         cache = 'WRITE_THROUGH_XN' if 'framebuffer' in name else 'WRITE_BACK'
         lines.append(region(short, base, size, 'MEM_RES', 'SYS_MEM_CAP', 'Reserv', cache))
         cursor = base + size
