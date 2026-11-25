@@ -38,7 +38,9 @@ source_files = ["UfsHc.c", "UfsExtents.c", "Mt6895UfsBlock.cpp"]
 runtime_identifiers = ["ShengUfsMt6895", "UfsHc.c", "UfsExtents.c", "Mt6895UfsBlock.cpp"]
 build_stage = "kernel"
 build = ["build.py"]
-outputs = ["build/sheng-ufs/libShengUfs.a"]
+# Empty outputs: build-xnu force-loads build/sheng-ufs/libShengUfs.a itself
+# when CONFIG_XNU_NATIVE_UFS=y. Listing it here would force_load twice.
+outputs = []
 '''
     with cat.open('a') as f:
         f.write(entry)
